@@ -1,10 +1,10 @@
+import sys
 from pymongo import MongoClient
 
 uri = 'mongodb://localhost:27017/?directConnection=true'
 db_name = 'sharelatex'
-search_string = '66dc31516fbe1b0cc73ee4ec'
 
-def search_all_collections():
+def search_all_collections(search_string):
     client = MongoClient(uri)
     db = client[db_name]
     collections = db.list_collection_names()
@@ -21,4 +21,8 @@ def search_all_collections():
             print(f"No results in collection '{coll_name}'.")
 
 if __name__ == "__main__":
-    search_all_collections()
+    if len(sys.argv) < 2:
+        print("Usage: python search.py <search_string>")
+        sys.exit(1)
+    search_string = sys.argv[1]
+    search_all_collections(search_string)
