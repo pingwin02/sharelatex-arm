@@ -1,0 +1,3 @@
+FROM pingwin02/sharelatex-arm:slim
+
+RUN tlmgr update --self && tlmgr update --all && tlmgr install scheme-full
