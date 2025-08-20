@@ -2,7 +2,7 @@
 
 MONOREPO_ROOT := ../
 export OVERLEAF_BASE_TAG ?= pingwin02/sharelatex-arm:base
-export OVERLEAF_TAG ?= pingwin02/sharelatex-arm:slim
+export OVERLEAF_SLIM_TAG ?= pingwin02/sharelatex-arm:slim
 export OVERLEAF_FULL_TAG ?= pingwin02/sharelatex-arm:full
 export OVERLEAF_LATEST_TAG ?= pingwin02/sharelatex-arm:latest
 
@@ -24,8 +24,8 @@ build-slim:
 	docker build \
 	  --build-arg BUILDKIT_INLINE_CACHE=1 \
 	  --file Dockerfile \
-	  --tag $(OVERLEAF_TAG) \
-	  --tag $(OVERLEAF_TAG)-$(DATE) \
+	  --tag $(OVERLEAF_SLIM_TAG) \
+	  --tag $(OVERLEAF_SLIM_TAG)-$(DATE) \
 	  $(MONOREPO_ROOT)
 
 build-full:
@@ -40,7 +40,7 @@ build-full:
 
 push:
 	docker push $(OVERLEAF_BASE_TAG)
-	docker push $(OVERLEAF_TAG)
+	docker push $(OVERLEAF_SLIM_TAG)
 	docker push $(OVERLEAF_FULL_TAG)
 	docker push $(OVERLEAF_LATEST_TAG)
 
