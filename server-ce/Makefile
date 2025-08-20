@@ -39,6 +39,9 @@ build-full:
 	  $(MONOREPO_ROOT)
 
 push:
+	docker push $(OVERLEAF_BASE_TAG)-$(DATE)
+	docker push $(OVERLEAF_SLIM_TAG)-$(DATE)
+	docker push $(OVERLEAF_FULL_TAG)-$(DATE)
 	docker push $(OVERLEAF_BASE_TAG)
 	docker push $(OVERLEAF_SLIM_TAG)
 	docker push $(OVERLEAF_FULL_TAG)
