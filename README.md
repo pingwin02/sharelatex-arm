@@ -23,7 +23,6 @@ The `pingwin02/sharelatex-arm` Docker image is a custom build of ShareLaTeX desi
 To get started, copy the following Docker Compose configuration into a file named `docker-compose.yml`.
 
 ```yaml
-version: '2.2'
 services:
     sharelatex:
         restart: always
