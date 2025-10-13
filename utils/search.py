@@ -1,8 +1,9 @@
 import sys
 from pymongo import MongoClient
 
-uri = 'mongodb://localhost:27017/?directConnection=true'
-db_name = 'sharelatex'
+uri = "mongodb://localhost:27017/?directConnection=true"
+db_name = "sharelatex"
+
 
 def search_all_collections(search_string):
     client = MongoClient(uri)
@@ -19,6 +20,7 @@ def search_all_collections(search_string):
                 found = True
         if not found:
             print(f"No results in collection '{coll_name}'.")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
