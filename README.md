@@ -130,7 +130,7 @@ services:
 
     mongo:
         restart: always
-        image: mongo:6.0
+        image: mongo:8.0
         container_name: mongo
         command: '--replSet overleaf'
         volumes:
@@ -150,7 +150,7 @@ services:
 
     redis:
         restart: always
-        image: redis:6.2
+        image: redis:7.4
         container_name: redis
         volumes:
             - ~/redis_data:/data
