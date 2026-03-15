@@ -1,4 +1,5 @@
 import sys
+import json
 from pymongo import MongoClient
 
 uri = "mongodb://localhost:27017/?directConnection=true"
@@ -16,10 +17,12 @@ def search_all_collections(search_string):
         found = False
         for doc in docs:
             if any(search_string in str(value) for value in doc.values()):
-                print(f"Found in collection '{coll_name}': {doc}")
+                print(f"Found in collection '{coll_name}':")
+                print(json.dumps(doc, indent=4, default=str))
                 found = True
         if not found:
-            print(f"No results in collection '{coll_name}'.")
+            pass
+            # print(f"No results in collection '{coll_name}'.")
 
 
 if __name__ == "__main__":
