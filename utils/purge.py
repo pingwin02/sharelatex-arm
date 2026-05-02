@@ -112,9 +112,6 @@ def purge_deleted_docs():
 
 
 def purge_orphan_documents(collection_name, compare_field, valid_ids, extra_query=None):
-    """
-    Usuwa dokumenty z podanej kolekcji, których compare_field nie występuje w valid_ids.
-    """
     client = MongoClient(uri)
     db = client[db_name]
     collection = db[collection_name]
