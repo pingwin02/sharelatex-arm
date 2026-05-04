@@ -8,7 +8,7 @@ export OVERLEAF_LATEST_TAG ?= pingwin02/sharelatex-arm:latest
 
 DATE = $(shell date +%Y-%m-%d)
 
-all: build-base build-slim build-full push
+all: build-base build-slim build-full
 
 build-base:
 	cp .dockerignore $(MONOREPO_ROOT)

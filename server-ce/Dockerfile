@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1-labs
 # ---------------------------------------------
 # Overleaf Community Edition (overleaf/overleaf)
 # ---------------------------------------------
@@ -7,25 +8,30 @@ FROM $OVERLEAF_BASE_TAG
 
 WORKDIR /overleaf
 
-# Add required source files for npm install
-# -----------------------------------------
-COPY --parents libraries/*/package.json patches/ services/*/package.json tools/migrations/ package.json package-lock.json /overleaf/
+# Add required source files for yarn install
+# -------------------------------------------
+COPY --parents libraries/*/package.json .yarn/patches/ services/*/package.json tools/migrations/ package.json yarn.lock .yarnrc.yml /overleaf/
 COPY server-ce/genScript.js server-ce/services.js /overleaf/
 
-# Install npm dependencies
-# ------------------------
+# Pre-install yarn via corepack so it is available at runtime for all users
+# -------------------------------------------------------------------------
+ENV COREPACK_HOME=/opt/corepack
+RUN corepack enable && corepack install
+
+# Install yarn dependencies
+# -------------------------
 RUN --mount=type=cache,target=/root/.cache \
-    --mount=type=cache,target=/root/.npm \
-    --mount=type=cache,target=/overleaf/services/web/node_modules/.cache,id=server-ce-webpack-cache \
+    --mount=type=cache,target=/root/.yarn/berry/cache,id=server-ce-yarn-cache \
     --mount=type=tmpfs,target=/tmp node genScript install | bash
 
 # Add the actual source files
 # ---------------------------
 COPY --parents libraries/ services/ tools/migrations/ /overleaf/
 RUN --mount=type=cache,target=/root/.cache \
-    --mount=type=cache,target=/root/.npm \
+    --mount=type=cache,target=/root/.yarn/berry/cache,id=server-ce-yarn-cache \
     --mount=type=cache,target=/overleaf/services/web/node_modules/.cache,id=server-ce-webpack-cache \
-    --mount=type=tmpfs,target=/tmp node genScript compile | bash
+    --mount=type=tmpfs,target=/tmp \
+    YARN_CACHE_FOLDER=/tmp/.yarn-cache node genScript compile | bash
 
 # Copy runit service startup scripts to its location
 # --------------------------------------------------
