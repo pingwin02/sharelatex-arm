@@ -1,6 +1,4 @@
-# Makefile
-
-MONOREPO_ROOT := ../
+MONOREPO_ROOT ?= ../overleaf
 export OVERLEAF_BASE_TAG ?= pingwin02/sharelatex-arm:base
 export OVERLEAF_SLIM_TAG ?= pingwin02/sharelatex-arm:slim
 export OVERLEAF_FULL_TAG ?= pingwin02/sharelatex-arm:full
@@ -11,8 +9,10 @@ DATE = $(shell date +%Y-%m-%d)
 all: build-base build-slim build-full
 
 build-base:
+	@echo "=== Building Base Image ($(OVERLEAF_BASE_TAG)) ==="
 	cp .dockerignore $(MONOREPO_ROOT)
 	docker build \
+	  --progress=plain \
 	  --build-arg BUILDKIT_INLINE_CACHE=1 \
 	  --file Dockerfile-base \
 	  --tag $(OVERLEAF_BASE_TAG) \
@@ -20,8 +20,10 @@ build-base:
 	  $(MONOREPO_ROOT)
 
 build-slim:
+	@echo "=== Building Slim Image ($(OVERLEAF_SLIM_TAG)) ==="
 	cp .dockerignore $(MONOREPO_ROOT)
 	docker build \
+	  --progress=plain \
 	  --build-arg BUILDKIT_INLINE_CACHE=1 \
 	  --file Dockerfile \
 	  --tag $(OVERLEAF_SLIM_TAG) \
@@ -29,8 +31,10 @@ build-slim:
 	  $(MONOREPO_ROOT)
 
 build-full:
+	@echo "=== Building Full Image ($(OVERLEAF_FULL_TAG)) ==="
 	cp .dockerignore $(MONOREPO_ROOT)
 	docker build \
+	  --progress=plain \
 	  --build-arg BUILDKIT_INLINE_CACHE=1 \
 	  --file Dockerfile-full \
 	  --tag $(OVERLEAF_FULL_TAG) \
@@ -47,4 +51,4 @@ push:
 	docker push $(OVERLEAF_FULL_TAG)
 	docker push $(OVERLEAF_LATEST_TAG)
 
-.PHONY: all build-base build-community build-full push
+.PHONY: all build-base build-slim build-full push
