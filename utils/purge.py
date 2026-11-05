@@ -1,4 +1,6 @@
 import os
+import subprocess
+import sys
 from pymongo import MongoClient
 
 uri = "mongodb://localhost:27017/?directConnection=true"
@@ -7,7 +9,19 @@ collection_name = "projects"
 user_files_dir = "../data/sharelatex_data/data/user_files"
 
 
+def remove_path(path):
+    rel_path = os.path.relpath(path, "../data/sharelatex_data")
+    container_path = f"/var/lib/overleaf/{rel_path}"
+    cmd = ["docker", "exec", "sharelatex", "rm", "-rf", container_path]
+    print("Running:", " ".join(cmd))
+    res = subprocess.run(cmd)
+    if res.returncode != 0:
+        subprocess.run(["sudo", "rm", "-rf", path])
+
+
 def confirm_yes(message):
+    if "-y" in sys.argv or "--yes" in sys.argv:
+        return True
     confirm = input(message)
     return confirm.strip().lower() == "yes"
 
@@ -41,9 +55,7 @@ def purge_folder(folder_path):
         return
     for f in os.listdir(folder_path):
         file_path = os.path.join(folder_path, f)
-        cmd = f"sudo rm -rf '{file_path}'"
-        print("Running:", cmd)
-        os.system(cmd)
+        remove_path(file_path)
 
 
 def purge_logs_from_history():
@@ -53,9 +65,7 @@ def purge_logs_from_history():
     for f in os.listdir(history_dir):
         if f.endswith(".log"):
             file_path = os.path.join(history_dir, f)
-            cmd = f"sudo rm -rf '{file_path}'"
-            print("Removing log:", cmd)
-            os.system(cmd)
+            remove_path(file_path)
 
 
 def get_project_suffixes(project_ids):
@@ -85,9 +95,7 @@ def purge_chunks_and_blobs(project_suffixes):
             print(folder_path)
         if confirm_yes("Type 'yes' to delete these folders: "):
             for folder_path in to_delete:
-                cmd = f"sudo rm -rf '{folder_path}'"
-                print("Running:", cmd)
-                os.system(cmd)
+                remove_path(folder_path)
             print("Chunks/blobs folders deleted.")
         else:
             print("Aborted. No folders deleted.")
@@ -156,9 +164,8 @@ def main():
             file_path = os.path.join(user_files_dir, f)
             print(file_path)
         if confirm_yes("Type 'yes' to delete these files: "):
-            cmd = "sudo rm -rf " + " ".join(os.path.join(user_files_dir, f) for f in orphan_files)
-            print("Running:", cmd)
-            os.system(cmd)
+            for f in orphan_files:
+                remove_path(os.path.join(user_files_dir, f))
             print("Files deleted.")
         else:
             print("Aborted. No files deleted.")
@@ -184,9 +191,7 @@ def main():
         if files:
             print(f"Purging files recursively from: {tmp_dir}")
             for file_path in files:
-                cmd = f"sudo rm -f '{file_path}'"
-                print("Running:", cmd)
-                os.system(cmd)
+                remove_path(file_path)
             print("All files in tmp folder purged recursively.")
         else:
             print("No files found in tmp folder to purge.")
